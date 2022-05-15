@@ -38,6 +38,7 @@ def impresion(spaced_word):
             # Pregunta letra de entrada
             char = input("\n Ingresa una letra : ").upper()
             # if len(char) == 1 and (ord(char) in range(65, 90) or ord(char) in range(97, 122)):
+            clean_window()
             if len(char) == 1 and char.isalpha():  # Maneja si la letra no es una sola letra
                 ask(char)
                 x = False
@@ -45,7 +46,7 @@ def impresion(spaced_word):
                 # Mensaje de error
                 raise ValueError("\nIngrese una unica letra por favor\n")
         except ValueError as ve:
-            print(ve)   
+            print(ve)
 
 
 def hide(text, dic):
@@ -91,7 +92,7 @@ def ask(letter):
             if len(line.strip()) > 0 and line.strip() != letter:
                 abc.append(line.strip())
     if abc == abc2:
-        print("\n -- Esta letra ya fue seleccionada --")
+        print("\n -- La letra *" + letter.upper() + "* ya fue seleccionada --")
         return
     with open("./archivos/abc.txt", "w", encoding="utf-8") as f:
         for i in abc:
@@ -116,7 +117,6 @@ def run():
     spaced_word = spaced(hidden_word)
     while rev == False:
         try:
-            clean_window()
             impresion(spaced_word)
             letters = compare()
             hidden_word = hide(cword, letters)
