@@ -45,7 +45,7 @@ def impresion(spaced_word):
                 # Mensaje de error
                 raise ValueError("\nIngrese una unica letra por favor\n")
         except ValueError as ve:
-            print(ve)
+            print(ve)   
 
 
 def hide(text, dic):
