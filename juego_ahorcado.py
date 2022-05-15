@@ -1,6 +1,7 @@
 
 from random import choice
 import re
+import os
 
 
 def restore_abc():
@@ -24,10 +25,40 @@ def read_data():
     return(cword)
 
 
+def clean_window(): return os.system("cls")
+
+
+def impresion(spaced_word):
+    x = True
+    ve = ""
+    while x:
+        try:
+            # Imprime letras descubiertas
+            print("Adivina la palabra\n" + "\n\n" + spaced_word)
+            # Pregunta letra de entrada
+            char = input("\n Ingresa una letra : ").upper()
+            # if len(char) == 1 and (ord(char) in range(65, 90) or ord(char) in range(97, 122)):
+            if len(char) == 1 and char.isalpha():  # Maneja si la letra no es una sola letra
+                ask(char)
+                x = False
+            else:
+                # Mensaje de error
+                raise ValueError("\nIngrese una unica letra por favor\n")
+        except ValueError as ve:
+            print(ve)
+
+
 def hide(text, dic):
     for i in dic:
         text = text.replace(i, "_")
     return text
+
+
+def spaced(text):
+    text2 = ""
+    for i in range(len(text)):
+        text2 = text2 + (text[i] + " ")
+    return text2
 
 
 def normalize(s):  # It removes the accents of a string
@@ -82,19 +113,19 @@ def run():
     cword = normalize(word)
     letters = compare()
     hidden_word = hide(cword, letters)
+    spaced_word = spaced(hidden_word)
     while rev == False:
         try:
-            print("Adivina la palabra\n" + cword + "\n\n" + hidden_word)
-            char = input("\n Ingresa una letra : ").upper()
-            if len(char) == 1:
-                ask(char)
-            else:
-                raise ValueError("\nSolo una letra por favor\n")
+            clean_window()
+            impresion(spaced_word)
             letters = compare()
             hidden_word = hide(cword, letters)
+            spaced_word = spaced(hidden_word)
             rev = revision(hidden_word, cword)
         except ValueError as ve:
             print(ve)
+
+        # clean_window()  # Limpia la pantalla
     print("\n\n -- Felicidades Ganaste -- \n  La palabra era : " + word)
 
 
