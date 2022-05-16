@@ -28,13 +28,14 @@ def read_data():
 def clean_window(): return os.system("cls")
 
 
-def impresion(spaced_word):
+def impresion(spaced_word, lives):
     x = True
     ve = ""
     while x:
         try:
             # Imprime letras descubiertas
-            print("Adivina la palabra\n" + "\n\n" + spaced_word)
+            print("Adivina la palabra\n Tienes " +
+                  str(lives) + " vidas\n\n" + spaced_word)
             # Pregunta letra de entrada
             char = input("\n Ingresa una letra : ").upper()
             # if len(char) == 1 and (ord(char) in range(65, 90) or ord(char) in range(97, 122)):
@@ -42,11 +43,22 @@ def impresion(spaced_word):
             if len(char) == 1 and char.isalpha():  # Maneja si la letra no es una sola letra
                 ask(char)
                 x = False
+                return char
             else:
                 # Mensaje de error
                 raise ValueError("\nIngrese una unica letra por favor\n")
         except ValueError as ve:
             print(ve)
+
+
+def live(lives, cword, char):
+    x = True
+    for i in range(len(cword)):
+        if char == cword[i]:
+            x = False
+    if x:
+        lives = lives - 1
+    return lives
 
 
 def hide(text, dic):
@@ -108,6 +120,7 @@ def revision(hidden_word, word):
 
 
 def run():
+    lives = 6
     rev = False
     restore_abc()
     word = read_data().upper()
@@ -115,9 +128,10 @@ def run():
     letters = compare()
     hidden_word = hide(cword, letters)
     spaced_word = spaced(hidden_word)
-    while rev == False:
+    while rev == False and lives > 0:
         try:
-            impresion(spaced_word)
+            char = impresion(spaced_word, lives)
+            lives = live(lives, cword, char)
             letters = compare()
             hidden_word = hide(cword, letters)
             spaced_word = spaced(hidden_word)
@@ -126,7 +140,11 @@ def run():
             print(ve)
 
         # clean_window()  # Limpia la pantalla
-    print("\n\n -- Felicidades Ganaste -- \n  La palabra era : " + word)
+    if rev == True:
+        print("\n\n -- Felicidades Ganaste -- ")
+    if lives == 0:
+        print("\n\n -- Game Over --")
+    print("La palabra era : " + word)
 
 
 if __name__ == '__main__':
