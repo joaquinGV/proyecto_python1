@@ -1,14 +1,88 @@
 
+from email.mime import image
 from random import choice
-import re
 import os
+
+imagen = [
+    '''
+
+   +---+
+   |   |
+       |
+       |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+       |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+   |   |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|   |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|\  |
+       |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|\  |
+  /    |
+       |
+ =========''', '''
+
+   +---+
+   |   |
+   O   |
+  /|\  |
+  / \  |
+       |
+ =========''', '''
+ 
+   +---+
+   |   |
+       |
+   O   |
+  /|\  |
+  / \  |
+ =========''', '''
+
+   +---+
+   |   |
+       |
+ O     |
+/|\    |
+/ \    |
+ =========''']
 
 
 def restore_abc():
     abc = []
     with open("./archivos/abecedario.txt", "r", encoding="utf-8") as f:
-        for line in f:
-            abc.append(line.strip())
+        abc = [line.strip() for line in f]
     with open("./archivos/abc.txt", "w", encoding="utf-8") as f:
         for i in abc:
             f.write(i)
@@ -16,12 +90,36 @@ def restore_abc():
                 f.write('\n')
 
 
-def read_data():
-    words = []
+def diff():
+    valid = False
+    while not valid:
+        try:
+            decision = int(input('''
+        
+    Seleccione la difultad: \n
+    Palabras cortas: Seleccione " 1 " 
+    Palabras largas: Seleccione " 2 "
+    Salir : " 3 "
+
+    '''))
+            if not decision in range(1, 4):
+                clean_window()
+                print("\t-- Seleccion no valida -- \n")
+                diff()
+
+            return decision
+        except ValueError:
+            clean_window()
+            print("Error: La seleccion no es un numero decimal")
+
+
+def read_data(lives):
+    cword = []
     with open("./archivos/data.txt", "r", encoding="utf=8") as f:
-        for line in f:
-            words.append(line.strip())
-        cword = choice(words)
+        if lives == 6:
+            cword = choice([line.strip() for line in f if len(line) <= 7])
+        if lives == 8:
+            cword = choice([line.strip() for line in f if len(line) > 7])
     return(cword)
 
 
@@ -34,15 +132,17 @@ def impresion(spaced_word, lives):
     while x:
         try:
             # Imprime letras descubiertas
-            print("Adivina la palabra\n Tienes " +
-                  str(lives) + " vidas\n\n" + spaced_word)
+
+            print('''
+============================
+    Adivina la palabra 
+============================ ''' + imagen[lives] + "\nTienes " + str(lives) + " vidas\n\n" + spaced_word)
             # Pregunta letra de entrada
             char = input("\n Ingresa una letra : ").upper()
             # if len(char) == 1 and (ord(char) in range(65, 90) or ord(char) in range(97, 122)):
             clean_window()
             if len(char) == 1 and char.isalpha():  # Maneja si la letra no es una sola letra
                 ask(char)
-                x = False
                 return char
             else:
                 # Mensaje de error
@@ -62,15 +162,11 @@ def live(lives, cword, char):
 
 
 def hide(text, dic):
+    text2 = ""
     for i in dic:
         text = text.replace(i, "_")
-    return text
-
-
-def spaced(text):
-    text2 = ""
     for i in range(len(text)):
-        text2 = text2 + (text[i] + " ")
+        text2 = text2 + (text[i]) + " "
     return text2
 
 
@@ -83,15 +179,14 @@ def normalize(s):  # It removes the accents of a string
         ("Ú", "U"),
     )
     for a, b in replacements:
-        s = s.replace(a, b).replace(a.upper(), b.upper())
+        s = s.replace(a, b)
     return s
 
 
 def compare():
     letters = []
     with open("./archivos/abc.txt", "r", encoding="utf=8") as f:
-        for line in f:
-            letters.append(line.strip())
+        letters = [line.strip() for line in f]
     return letters
 
 
@@ -112,39 +207,37 @@ def ask(letter):
             f.write('\n')
 
 
-def revision(hidden_word, word):
-    state = False
-    if hidden_word == word:
-        state = True
-    return state
-
-
 def run():
-    lives = 6
-    rev = False
-    restore_abc()
-    word = read_data().upper()
-    cword = normalize(word)
-    letters = compare()
-    hidden_word = hide(cword, letters)
-    spaced_word = spaced(hidden_word)
-    while rev == False and lives > 0:
-        try:
-            char = impresion(spaced_word, lives)
+    y = 0
+    clean_window()
+    while y != 3:
+        dif = diff()
+        if dif == 1:
+            lives = 6
+        elif dif == 2:
+            lives = 8
+        else:
+            print(" -- Juego terminado -- ")
+            break
+        clean_window()
+        rev = False
+        restore_abc()
+        word = read_data(lives).upper()
+        cword = normalize(word)
+        letters = compare()
+        hidden_word = hide(cword, letters)
+        while rev == False and lives > 0:
+            char = impresion(hidden_word, lives)
             lives = live(lives, cword, char)
             letters = compare()
             hidden_word = hide(cword, letters)
-            spaced_word = spaced(hidden_word)
-            rev = revision(hidden_word, cword)
-        except ValueError as ve:
-            print(ve)
-
-        # clean_window()  # Limpia la pantalla
-    if rev == True:
-        print("\n\n -- Felicidades Ganaste -- ")
-    if lives == 0:
-        print("\n\n -- Game Over --")
-    print("La palabra era : " + word)
+            if hidden_word.replace(" ", "") == cword:
+                rev = True
+        if rev == True:
+            print("\n\n -- Felicidades Ganaste -- ")
+        if lives == 0:
+            print(image[0] + "\n\n -- Game Over --")
+        print("La palabra era : " + word)
 
 
 if __name__ == '__main__':
