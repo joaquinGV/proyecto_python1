@@ -236,8 +236,8 @@ def run():
         if rev == True:
             print("\n\n -- Felicidades Ganaste -- ")
         if lives == 0:
-            print(image[0] + "\n\n -- Game Over --")
-        print("La palabra era : " + word)
+            print("\n\n -- Game Over --")
+        print(imagen[lives], "\nLa palabra era : " + word)
 
 
 if __name__ == '__main__':
